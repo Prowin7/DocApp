@@ -15,21 +15,14 @@ class MongoDBConnection {
     }
 
     try {
-      // Get the MongoDB URI from environment
-      let uri = process.env.MONGODB_URI;
+      // Get the MongoDB URI from environment - use it directly
+      // Your URI should already include the database name like: mongodb+srv://...@cluster.mongodb.net/DocApp?...
+      const uri = process.env.MONGODB_URI;
 
-      // Parse the URI to check if it has a database name
-      // MongoDB Atlas URIs look like: mongodb+srv://user:pass@cluster.mongodb.net/dbname?options
-      // Check if there's already a database name in the path
-      const urlParts = uri.split('mongodb.net');
-      if (urlParts.length > 1) {
-        const pathPart = urlParts[1];
-        // If no database name (just / or /? or nothing), add prescripto
-        if (!pathPart || pathPart === '/' || pathPart.startsWith('/?')) {
-          const queryPart = pathPart.includes('?') ? pathPart.substring(pathPart.indexOf('?')) : '';
-          uri = urlParts[0] + 'mongodb.net/prescripto' + queryPart;
-        }
+      if (!uri) {
+        throw new Error('MONGODB_URI environment variable is not set');
       }
+
       console.log("Connecting to MongoDB...");
 
       // Configure mongoose options
